@@ -4334,12 +4334,12 @@ static void _htoni_ul(jit_state_t*, jit_int32_t, jit_word_t);
 #endif
 #  define movi_f_w(r0, i0)		_movi_f_w(_jit, r0, i0)
 static void _movi_f_w(jit_state_t*, jit_int32_t, jit_float32_t);
-#if __WORDSIZE == 32 && !(defined(__mips__) && NEW_ABI)
-#  define movi_d_ww(r0, r1, i0)		_movi_d_ww(_jit, r0, r1, i0)
-static void _movi_d_ww(jit_state_t*, jit_int32_t, jit_int32_t, jit_float64_t);
-#else
+#if __WORDSIZE == 64
 #  define movi_d_w(r0, i0)		_movi_d_w(_jit, r0, i0)
 static void _movi_d_w(jit_state_t*, jit_int32_t, jit_float64_t);
+#elif !(defined(__mips__) && NEW_ABI)
+#  define movi_d_ww(r0, r1, i0)		_movi_d_ww(_jit, r0, r1, i0)
+static void _movi_d_ww(jit_state_t*, jit_int32_t, jit_int32_t, jit_float64_t);
 #endif
 #define cloi(r0, i0)			_cloi(_jit, r0, i0)
 static void _cloi(jit_state_t*, jit_int32_t, jit_word_t);
@@ -4806,7 +4806,23 @@ _movi_f_w(jit_state_t *_jit, jit_int32_t r0, jit_float32_t i0)
     movi(r0, data.i);
 }
 
-#if __WORDSIZE == 32 && !(defined(__mips__) && NEW_ABI)
+#if __WORDSIZE == 64
+static void
+_movi_d_w(jit_state_t *_jit, jit_int32_t r0, jit_float64_t i0)
+{
+    union {
+	jit_int64_t	l;
+	jit_float64_t	d;
+    } data;
+    data.d = i0;
+#  if defined(__ia64__)
+    /* Should be used only in this case (with out0 == 120) */
+    if (r0 >= 120)
+	r0 = _jitc->rout + (r0 - 120);
+#  endif
+    movi(r0, data.l);
+}
+#elif !(defined(__mips__) && NEW_ABI)
 static void
 _movi_d_ww(jit_state_t *_jit, jit_int32_t r0, jit_int32_t r1, jit_float64_t i0)
 {
@@ -4823,23 +4839,6 @@ _movi_d_ww(jit_state_t *_jit, jit_int32_t r0, jit_int32_t r1, jit_float64_t i0)
     movi(r1, data.i[0]);
     movi(r0, data.i[1]);
 #  endif
-}
-
-#else
-static void
-_movi_d_w(jit_state_t *_jit, jit_int32_t r0, jit_float64_t i0)
-{
-    union {
-	jit_int64_t	l;
-	jit_float64_t	d;
-    } data;
-    data.d = i0;
-#  if defined(__ia64__)
-    /* Should be used only in this case (with out0 == 120) */
-    if (r0 >= 120)
-	r0 = _jitc->rout + (r0 - 120);
-#  endif
-    movi(r0, data.l);
 }
 #endif
 
