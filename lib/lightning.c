@@ -2620,8 +2620,8 @@ _jit_emit(jit_state_t *_jit)
 #  endif
 #  ifndef NDEBUG
 	result =
-	mprotect(_jit->code.ptr, _jit->code.protect, PROT_READ | PROT_EXEC);
 #  endif
+	mprotect(_jit->code.ptr, _jit->code.protect, PROT_READ | PROT_EXEC);
 	assert(result == 0);
     }
 #endif /* HAVE_MMAP */
