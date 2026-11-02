@@ -2310,7 +2310,10 @@ _emit_code(jit_state_t *_jit)
 void
 jit_flush(void *fptr, void *tptr)
 {
-#if defined(__GNUC__)
+#if defined(__PS3__)
+    extern void lightrec_code_inv(void *, uint32_t);
+    lightrec_code_inv(fptr, (uintptr_t)tptr - (uintptr_t)fptr);
+#elif defined(__GNUC__)
     jit_word_t		f, t, s;
 
     s = sysconf(_SC_PAGE_SIZE);
