@@ -1292,6 +1292,9 @@ _emit_code(jit_state_t *_jit)
     for (node = _jitc->head; node; node = node->next)
 	if (node->code != jit_code_label &&
 	    node->code != jit_code_note &&
+#ifdef __PS3__
+	    node->code != jit_code_live &&
+#endif
 	    node->code != jit_code_name)
 	    break;
     if (node && (node->code != jit_code_prolog ||
