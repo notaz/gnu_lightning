@@ -18,7 +18,7 @@ AM_CFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/include \
 	-D_GNU_SOURCE $(LIGHTNING_CFLAGS)
 
 check_PROGRAMS = lightning ccall self setcode nodata ctramp carg cva_list \
-	catomic protect riprel cbit callee cldstxba
+	catomic protect riprel cbit callee cldstxba function-entry
 
 lightning_LDADD = $(top_builddir)/lib/liblightning.la -lm $(SHLIB)
 lightning_SOURCES = lightning.c
@@ -69,6 +69,9 @@ callee_SOURCES = callee.c
 
 cldstxba_LDADD = $(top_builddir)/lib/liblightning.la -lm $(SHLIB)
 cldstxba_SOURCES = cldstxba.c
+
+function_entry_LDADD = $(top_builddir)/lib/liblightning.la -lm $(SHLIB)
+function_entry_SOURCES = function-entry.c
 
 noinst_PROGRAMS = gen_cbit
 gen_cgit_LDADD =
@@ -389,7 +392,7 @@ TESTS += $(nodata_TESTS)
 endif
 
 TESTS += ccall self setcode nodata ctramp carg cva_list catomic \
-         protect riprel cbit callee
+         protect riprel cbit callee function-entry
 CLEANFILES = $(TESTS) gen_cbit cbit.c
 
 #TESTS_ENVIRONMENT=$(srcdir)/run-test;

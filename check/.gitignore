@@ -75,3 +75,5 @@ tramp
 va_list
 varargs
 cbit.c
+function-entry
+function-entry.exe

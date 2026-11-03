@@ -1292,13 +1292,10 @@ _emit_code(jit_state_t *_jit)
     for (node = _jitc->head; node; node = node->next)
 	if (node->code != jit_code_label &&
 	    node->code != jit_code_note &&
-#ifdef __PS3__
 	    node->code != jit_code_live &&
-#endif
 	    node->code != jit_code_name)
 	    break;
-    if (node && (node->code != jit_code_prolog ||
-		 !(_jitc->functions.ptr + node->w.w)->assume_frame)) {
+    if (node && node->code != jit_code_prolog) {
 	/* code may start with a jump so add an initial function descriptor */
 	word = _jit->pc.w + sizeof(void*) * 3;
 	iw(word);			/* addr */
@@ -2018,10 +2015,8 @@ _emit_code(jit_state_t *_jit)
 	    restart_function:
 		_jitc->again = 0;
 #if _CALL_AIXDESC
-		if (_jitc->jump && !_jitc->function->assume_frame) {
-		    /* remember prolog to hide offset adjustment for a jump
-		     * to the start of a function, what is expected to be
-		     * a common practice as first jit instruction */
+		if (!_jitc->function->assume_frame) {
+		    /* Keep descriptor addresses for jumps to function entries. */
 		    if (_jitc->prolog.offset >= _jitc->prolog.length) {
 			_jitc->prolog.length += 16;
 			jit_realloc((jit_pointer_t *)&_jitc->prolog.ptr,
